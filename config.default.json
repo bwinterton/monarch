@@ -1,0 +1,18 @@
+{
+    "quay" : {
+	"namespace" : "mynamespace",
+	"username" : "myquayuser",
+	"password" : "myquaypass"
+    },
+    "registry" : {
+	"url" : "https://registry.somewhere.io",
+	"username" : "test",
+	"password" : "test"
+    },
+    "images" : [
+	{
+	    "name" : "test",
+	    "public" : true,
+	    "adminTeam" : "devops"
+	}
+    ]
