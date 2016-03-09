@@ -29,6 +29,20 @@ func main() {
 				},
 			},
 		},
+		{
+			Name:    "validateConfig",
+			Aliases: []string{"vc", "validate"},
+			Action: func(c *cli.Context) {
+				ValidateFile(c.String("filename"))
+			},
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "filename, f",
+					Value: "config.json",
+					Usage: "The location of the config file to validate Optional, defaults to config.json",
+				},
+			},
+		},
 	}
 
 	app.Run(os.Args)
