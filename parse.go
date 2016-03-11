@@ -57,9 +57,8 @@ func validateConfig(config Config) error {
 	}
 
 	if config.Quay.Namespace == "" ||
-		config.Quay.Username == "" ||
-		config.Quay.Password == "" {
-		return fmt.Errorf("Quay configuration is not complete. Namespace , username, and password are all required")
+		config.Quay.OAuthToken == "" {
+		return fmt.Errorf("Quay configuration is not complete. Namespace , and OAuth Token are all required")
 	}
 
 	// TODO: Add more checking here for warnings of things like not specifying

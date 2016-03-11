@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"net/http"
 	"os"
 
@@ -13,6 +12,13 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "Monarch"
 	app.Usage = "A tool to migrate Docker Registry images to quay.io"
+	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name:  "config, c",
+			Value: "config.json",
+			Usage: "The location of the config file to use. Optional, defaults to config.json",
+		},
+	}
 	app.Commands = []cli.Command{
 		{
 			Name:    "generateConfig",
@@ -33,40 +39,38 @@ func main() {
 			Name:    "validateConfig",
 			Aliases: []string{"vc", "validate"},
 			Action: func(c *cli.Context) {
-				ValidateFile(c.String("filename"))
+				ValidateFile(c.Parent().String("config"))
+			},
+		},
+		{
+			Name:    "simulate",
+			Aliases: []string{"sim", "s"},
+			Action: func(c *cli.Context) {
+				Simulate(c.Parent().String("config"))
+			},
+		},
+		{
+			Name:    "migrate",
+			Aliases: []string{"mig", "s"},
+			Action: func(c *cli.Context) {
+				dConfig := newDockerConfig(c.String("docker-endpoint"), c.Bool("docker-machine"))
+				Migrate(c.Parent().String("config"), dConfig)
 			},
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "filename, f",
-					Value: "config.json",
-					Usage: "The location of the config file to validate Optional, defaults to config.json",
+					Name:  "docker-endpoint",
+					Value: "unix:///var/run/docker.sock",
+					Usage: "The docker endpoint to use for the docker client. Optional, defaults to unix://var/run/docker.sock",
+				},
+				cli.BoolFlag{
+					Name:  "docker-machine",
+					Usage: "Use this flag if you are running docker machine and want to use the docker-machine client",
 				},
 			},
 		},
 	}
 
 	app.Run(os.Args)
-
-}
-
-func (env *httpClientEnv) getImageTags(imageName string) image {
-	req, err := http.NewRequest("GET", env.RegistryURL+"/v2/"+imageName+"/tags/list", nil)
-	req.SetBasicAuth(env.Username, env.Password)
-
-	res, err := env.Client.Do(req)
-	if err != nil {
-		panic("Unable to get tag list for image: " + imageName)
-	}
-	defer res.Body.Close()
-
-	image := image{}
-	d := json.NewDecoder(res.Body)
-	err = d.Decode(&image)
-	if err != nil {
-		panic("Unable to parse tag list for image: " + imageName)
-	}
-
-	return image
 
 }
 
