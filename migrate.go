@@ -77,7 +77,7 @@ func Migrate(filename string, dConfig DockerConfig) {
 				continue
 			}
 
-			fmt.Printf("Tagging image %s/%s:%s -> quay.io/%s/%s:%s\n", c.Registry.URL, image.Name, tag, c.Quay.Namespace, image.NewName, tag)
+			fmt.Printf("Tagging image %s/%s:%s -> quay.io/%s/%s:%s\n\n", c.Registry.URL, image.Name, tag, c.Quay.Namespace, image.NewName, tag)
 			err = dConfig.tagImage(image.Name, image.NewName, tag)
 
 			fmt.Printf("Pushing tag: %s\n--------\n\n", tag)
